@@ -79,47 +79,24 @@ public class PropAtMostNValue extends Propagator<IntVar> {
             }
         }
         this.offSet = minConcernedValues;
-//        System.out.println(this.offSet);
         this.dualsolver = new DualSolver(X, Y, offSet, N, Grad, n, m, numberOfStep, threshold);
-
-
-
-        this.sureValues = new BitSet(m + 1);//System.out.println("(PropNValueGlobal 134) sureValues : "+sureValues);
+        this.sureValues = new BitSet(m + 1);
         this.possibleValues = new BipartiteSet(m + 1);
-//        for(int i = 0; i < n; i++) {
-//            System.out.println("X["+i+"], "+X[i].getDomainSize());
-//        }
-
     }
 
 
 
     @Override
     public void propagate(int evtmask) throws ContradictionException {
-//        System.out.println("(97 propagate "+ dualsolver.iterTot +" ) "+model.getSolver().getTimeCount());
         initiateNeededValues();
         propagSumYLessEqualThanN();
-//        if (lbSumOfWeights > Z.getUB()) {
-////            contradiction(Z, "");
-//            Z.updateLowerBound((int)Math.ceil(lbSumOfWeights), this);
-////            Z.getModel().getSolver().getEngine().flush();
-//        }
-//        X[0].removeValue(offSet + 1, this);
-//        Y[2].setToFalse(this);
-//        Y[10].setToTrue(this);
-//        X[1].instantiateTo(offSet + 29, this);
-//        if(X[6].isInstantiated()){
-//            System.out.println("ici");
-//        }
         dualsolver.initRelaxation();
         dualsolver.lagrangianRelaxation();
 
 
         if (numberOfStep > 0) {
-//            System.out.println("Hello");
             dualsolver.localAlterationAlgorithm();
         }
-//        printX();
         for (int j = 0; j < Y.length; j++) {
             if (Y[j].isInstantiatedTo(0)) {
                 for(int i=0; i <= dualsolver.getYInXIndex()[j].last;i++){
@@ -132,24 +109,12 @@ public class PropAtMostNValue extends Propagator<IntVar> {
                 }
             }
         }
-//        if (numberOfStep > 0) {
-////            System.out.println("Hello");
-//            dualsolver.AlgoFred();
-//        }
         filterFromEndSupport();
-//        printX();
-
-//        System.out.println("(140 propagate"+ dualsolver.iterTot +") "+model.getSolver().getTimeCount());
-//        System.out.println("----------------------------------------------------------------");
     }
 
     @Override
     public ESat isEntailed() {
         if(nbYtoOne==N.getUB()){
-//            System.out.println(fixedYiTo1.prettyFred());
-//            System.out.println(fixedYiTo0.prettyFred());
-//            printX3(7);
-//            printY2(10);
             return ESat.TRUE;
         }
         if(nbYtoOne>N.getUB()){
@@ -189,41 +154,32 @@ public class PropAtMostNValue extends Propagator<IntVar> {
         maxNbYtoOne = possibleValues.size();
     }
 
-    public void filterFromEndSupport() throws ContradictionException {//System.out.println("(PropNValueGlobal 451)");
+    public void filterFromEndSupport() throws ContradictionException {
         double lb = dualsolver.getLB();
         Z.updateLowerBound((int) Math.ceil(lb), this);
         for (int idx = 0; idx < Y.length; idx++) {
             BipartiteSet fvalues = dualsolver.getLFValues(idx);
-            if (fvalues != null) {//System.out.println("(PropNValueGlobal 456)");
+            if (fvalues != null) {
                 for (int i = 0; i < fvalues.size(); i++) {
                     int val = fvalues.list[i];
-                    if (!Y[idx].isInstantiated()) {//System.out.println("(PropNValueGlobal 459)");
-                        //System.out.println("remove value " + val + " from "+Yj[idx]);
+                    if (!Y[idx].isInstantiated()) {
                         Y[idx].removeValue(val, this);
                         updateFromRemoval(idx, val, false);
-//                        System.out.println("HereXYZZZ");
                     }
                 }
             }
         }
-//        if (!weighted) {//filter the lower current_bound of N weighted est à vrai donc on ne rentre pas
-//            N.updateLowerBound(relax.getLowerBoundN(), this);
-//        }
-//        N.updateLowerBound(relax.getLowerBoundN(), this);
         propagSumYLessEqualThanN();
-        //System.out.println("NB Values: " + valuesPruned.size() + " " + valuesPruned.toString());
     }
 
     private void updateFromRemoval(int idxVal, int val, boolean triggerPropag) throws ContradictionException {//System.out.println("(PropNValueGlobal 268)");
-        if (val == 1) {//System.out.println("(PropNValueGlobal 269)");
+        if (val == 1) {
             maxNbYtoOne--;
             possibleValues.remove(idxVal);
-//            System.out.println("HereXYZ2 " + idxVal);
-        } else if (val == 0) {//System.out.println("(PropNValueGlobal 273)");
+        } else if (val == 0) {
             nbYtoOne++;
             lbSumOfWeights += 1.0;
             sureValues.set(idxVal);
-//            System.out.println("HereXYZ3 " + idxVal);
             updatePossibleFromVal(idxVal);
         }
         if (triggerPropag) propagSumYLessEqualThanN();
@@ -236,15 +192,7 @@ public class PropAtMostNValue extends Propagator<IntVar> {
     private void propagSumYLessEqualThanN() throws ContradictionException {
         N.updateLowerBound(nbYtoOne, this);
         N.updateUpperBound(maxNbYtoOne, this);
-        /*if (maxNbYtoOne == N.getLB() && maxNbYtoOne != nbYtoOne) {  //<hca> this is propagating Sum_i Y_i = N ...
-            for (int j = 0; j < Yj.length; j++) {
-                if (!Yj[j].isInstantiated()) {
-                    Yj[j].removeValue(0, aCause);
-                    updateFromRemoval(j, 0, false);
-                }
-            }
-        } else */
-        if (nbYtoOne == N.getUB()) {//System.out.println("(PropNValueGlobal 255)");
+        if (nbYtoOne == N.getUB()) {
             for (int j = 0; j < Y.length; j++) {
                 if (!Y[j].isInstantiated()) {
                     Y[j].removeValue(1, this);
@@ -258,7 +206,6 @@ public class PropAtMostNValue extends Propagator<IntVar> {
     }
 
     private void printX3(int number){
-//        System.out.print("X = [");
         for(int i=0; i<n;i++){
             if(X[i].getLB() < 10){
                 System.out.print(X[i].getLB()+" \t");
@@ -271,13 +218,11 @@ public class PropAtMostNValue extends Propagator<IntVar> {
             }
         }
         System.out.println();
-//        System.out.println("]");
     }
     private void printX(){
-//        System.out.print("X = [");
         for(int i=0; i<n;i++){
             System.out.println(X[i]);
-//        System.out.println("]");
+
         }
     }
 

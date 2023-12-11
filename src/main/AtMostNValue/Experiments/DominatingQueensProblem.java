@@ -46,10 +46,10 @@ public class DominatingQueensProblem {
         int offSet = 0;
         boolean viewSolution = true;
 
-        GradientObject[] grads = new GradientObject[]{new GradientObject(GradientMethod.Harmonic,1.0,1.0), new GradientObject(GradientMethod.Geometric,0.95,1000.0), new GradientObject(GradientMethod.Newton,1.0,5.0)};
+//        GradientObject[] grads = new GradientObject[]{new GradientObject(GradientMethod.Harmonic,1.0,1.0), new GradientObject(GradientMethod.Geometric,0.95,1000.0), new GradientObject(GradientMethod.Newton,1.0,5.0)};
 //        GradientObject[] grads = new GradientObject[]{new GradientObject(GradientMethod.Harmonic,1.0,1.0)};
 //        GradientObject[] grads = new GradientObject[]{new GradientObject(GradientMethod.Geometric,0.95,1000.0)};
-//        GradientObject[] grads = new GradientObject[]{new GradientObject(GradientMethod.Newton,1.0,5.0)};
+        GradientObject[] grads = new GradientObject[]{new GradientObject(GradientMethod.Newton,1.0,5.0)};
 
         int[] numberOfStep = new int[]{0, 40};
         double[] threshold = new double[]{0.4};

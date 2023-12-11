@@ -265,7 +265,6 @@ public class FacilityParseur {
             }
 
             //read capacities
-            //?? TODO: find out about the capacities used by Pascal for these problems
             for (int i = 0; i < nbW; i++) {
                 data.setCapa(nbS/2,i);
             }

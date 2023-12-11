@@ -39,7 +39,7 @@ public class PMedianProblem {
 //                    GlobalConstraintFactory.setHarmonicGradient(100000, 100000);
             } else if (gtype == GradientMethod.Geometric) {
 //                    GlobalConstraintFactory.setPowGradient(1000, 0.95, 1000, 1000);
-            } else if (gtype == GradientMethod.Newton) {//System.out.println("(Benchmark 381) Initialisation de Newton");
+            } else if (gtype == GradientMethod.Newton) {
                 gradientObject = new GradientObject(GradientMethod.Newton, 1.0, 5.0);
             }
 
@@ -54,17 +54,15 @@ public class PMedianProblem {
 
         }
 
-        //System.out.println();
     }
     public static void runAndPrint(FacilityLocationData wld, TestSolver test, TestSolver.Heuristiques heuristiques) {//System.out.println("(Benchmark 344) Juste avant le \"run\" qui filtre le problème @ "+test.getTime());
         test.run();
-        if (test.isFeasible()) {//System.out.println("Feli was here @ Benchmark 340");
+        if (test.isFeasible()) {
             FacilitySolution sol = test.getSolution();
             if (!sol.check()) {
                 throw new Error("Error on solution registered by " + test);
             }
         }
-        //System.out.println("Feli was here @ Benchmark 346");
         printRes(wld, test, heuristiques);
 
     }

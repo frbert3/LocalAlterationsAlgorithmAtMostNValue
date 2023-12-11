@@ -129,34 +129,9 @@ public class RestrictedFLSolverCP extends TestSolver {
     }
 
     protected void stateConstraints() throws ContradictionException {
-//        PropNValueGlobal.subproblem = PropNValueGlobal.SUBPROBLEMS.NVALUE_DEDICATED;//System.out.println("(RestrictedFLSolverCP 120) PropNValueGlobal.subproblem = " + PropNValueGlobal.subproblem);
 
         // 1) Take into account initial holes
-        XAdjustment();//System.out.println("(RestrictedFLSolverCP 123) Ajustement des X"); // Remettre le bout de code au lieu de ça
-//        System.out.println("net.add_nodes(");
-//        System.out.print("[");
-//        for(int i = 0; i< 201; i++) {
-//            System.out.print(i+",");
-//        }
-//        System.out.println("],");
-//        System.out.print("label = [");
-//        for(int i = 0; i< 100; i++) {
-//            System.out.print("\"C"+i+"\",");
-//        }
-//        for(int i = 0; i< 100; i++) {
-//            System.out.print("\"S"+i+"\",");
-//        }
-//        System.out.println("],");
-//        System.out.print("color = [");
-        //"#eb4034" red Store i
-        //"#3155a8" blue Client i
-//        for(int i = 0; i< 100; i++) {
-//            System.out.print("\"#3155a8\",");
-//        }
-//        for(int i = 0; i< 100; i++) {
-//            System.out.print("\"#eb4034\",");
-//        }
-//        System.out.println("],\n)");
+        XAdjustment();
 
 
 
@@ -289,10 +264,9 @@ public class RestrictedFLSolverCP extends TestSolver {
     //***************** solveRelaxation *****************************//
     //***************************************************//
 
-    public void run() {//System.out.println("(RestrictedFLSolverCP 267) On est dans le constructeur de le \"run\" @ "+X[0].getSolver().getMeasures().getTimeCount());
-//        System.out.println("Here");
-        if (feasible) {//System.out.println("(RestrictedFLSolverCP 269) On est \"feasible\"");
-            try {//System.out.println("(RestrictedFLSolverCP 270) try{");
+    public void run() {
+        if (feasible) {
+            try {
                 solver.propagate();
                 this.rootNodeLb = Z.getLB();
 
@@ -306,7 +280,6 @@ public class RestrictedFLSolverCP extends TestSolver {
                     }
                 });
                 setHeuristic();
-//                solver.findOptimalSolution(Z, false);
 
                 model.setObjective(Model.MINIMIZE, Z);
                 Solution solution2 = new Solution(model);
@@ -316,8 +289,8 @@ public class RestrictedFLSolverCP extends TestSolver {
                 solution2.restore();
 
 
-                if (solver.isFeasible() == ESat.TRUE) {//System.out.println("Feli was here @ RestrictedFLSolverCP 305");
-                    storeSolution();//System.out.println("Feli was here @ RestrictedFLSolverCP 307 @ time = "+solver.getMeasures().getTimeCount());
+                if (solver.isFeasible() == ESat.TRUE) {
+                    storeSolution();
                 } else {
                     optCost = -1;
                     feasible = false;
@@ -325,7 +298,6 @@ public class RestrictedFLSolverCP extends TestSolver {
                 IMeasures m = solver.getMeasures();
                 if (log) System.out.println("Back  : " + m.getFailCount());
                 this.searchSpace = m.getFailCount();
-//                System.out.println(solver.getMeasures().getBestSolutionValue());
 
 
             } catch (ContradictionException e) {
@@ -338,19 +310,17 @@ public class RestrictedFLSolverCP extends TestSolver {
         this.time = m.getTimeCount();
         this.searchSpace = m.getFailCount();
         this.optCost = m.getBestSolutionValue().intValue();
-//        System.out.println(optCost);
     }
 
 
     public void storeSolution() {
         this.feasible = false;
         if (solver.isFeasible() != ESat.UNDEFINED) {
-            if (solver.isFeasible() == ESat.TRUE) {//System.out.println("Feli was here @ RestrictedFLSolverCP 331");
+            if (solver.isFeasible() == ESat.TRUE) {
                 optCost = solver.getObjectiveManager().getBestSolutionValue().intValue();
                 this.feasible = true;
                 for (int j = 0; j < data.getNbW(); j++) {
-                    if (Yj[j].isInstantiatedTo(1) && !solution.containsY(j+1)) {//!solution.y_sol.contains(j + 1)) {
-//                        System.out.println("Feli was here @ RestrictedFLSolverCP 335 for j = "+ j);
+                    if (Yj[j].isInstantiatedTo(1) && !solution.containsY(j+1)) {
                         solution.addY(j+1);//y_sol.add(j + 1);
                         for (int i = 0; i < data.getNbS(); i++) {
                             if (X[i].isInstantiatedTo(j)) {
@@ -383,33 +353,21 @@ public class RestrictedFLSolverCP extends TestSolver {
 //solver.set(ISF.domOverWDeg(X, seed, valueSelector));
 
 
-        if (data.isObjectiveConnection()) { //System.out.println("Feli was here @ RestrictedFLSolverCP 369"); // 1) heuristique basique quand on veut ouvrir le plus de valeur possible
-            //solver.post(ICF.arithm(N,"=",N.getUB()));//not needed
-            if (heur_mode == Heuristiques.STAND) {//System.out.println("Feli was here @ RestrictedFLSolverCP 371");
-                //solver.set(ISF.lexico_UB(N),
-//                solver.set(ISF.custom(ISF.minDomainSize_var_selector(), ISF.min_value_selector(), Yj),
-//                        ISF.custom(ISF.minDomainSize_var_selector(), ISF.min_value_selector(), X));
+        if (data.isObjectiveConnection()) {
+            if (heur_mode == Heuristiques.STAND) {
                 solver.setSearch(Search.minDomLBSearch(Yj), Search.minDomLBSearch(X));
             } else {
-//                System.out.println("Ici");
-                //solver.set(ISF.lexico_UB(N),
                 solver.setSearch(
                         Search.intVarSearch(new CPFeasAndCheap(data, Yj, X), new IntDomainMax(), Yj),
                         Search.intVarSearch(new FirstFail(model), new IntDomainMin(), X));
             }
         } else if (data.isObjectiveFixed()) { // 2) Heuristique basique quand on veut ouvrir le moins de valeur possible
             if (heur_mode == Heuristiques.STAND) {
-//                solver.set(ISF.lexico_LB(N),
-//                        ISF.custom(ISF.minDomainSize_var_selector(), ISF.min_value_selector(), Yj),
-//                        ISF.custom(ISF.minDomainSize_var_selector(), ISF.min_value_selector(), X));
                 solver.setSearch(Search.minDomLBSearch(N),Search.minDomLBSearch(Yj), Search.minDomLBSearch(X));
             } else {
                 solver.setSearch(Search.minDomLBSearch(N),
                         Search.intVarSearch(new CPFeasAndCheap(data, Yj, X), new IntDomainMax(), Yj),
                         Search.intVarSearch(new FirstFail(model), new IntDomainMin(), X));
-//                solver.set(ISF.lexico_LB(N),
-//                        ISF.custom(new CPFeasAndCheap(data, Yj, X), ISF.max_value_selector(), Yj),
-//                        ISF.custom(ISF.minDomainSize_var_selector(), ISF.min_value_selector(), X));
             }
         } else { // 3) TODO
             throw new Error("no mixed cost facilit pb yet");
