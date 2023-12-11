@@ -13,6 +13,8 @@ import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 
 public class DominatingQueensProblem {
     public static void main(String[] args) throws FileNotFoundException {
@@ -35,9 +37,12 @@ public class DominatingQueensProblem {
         System.out.println("N");
 
 
-        int[] q = new int[]{6, 7, 8, 8, 9};
-        int[] p = new int[]{6, 7, 8, 8, 9};
-        int[] v = new int[]{3, 4, 5, 4, 5};
+        int[] q = new int[]{6, 7, 8, 8, 9,11};
+        int[] p = new int[]{6, 7, 8, 8, 9,11};
+        int[] v = new int[]{3, 4, 5, 4, 5, 5};
+//        int[] q = new int[]{11};
+//        int[] p = new int[]{11};
+//        int[] v = new int[]{5};
         int offSet = 0;
         boolean viewSolution = true;
 
